@@ -6,6 +6,7 @@ import signal
 import sys
 import threading
 import time
+import traceback
 from argparse import ArgumentParser
 from logging import getLogger
 from operator import attrgetter
@@ -191,6 +192,7 @@ class Task(_Task):
             **Do not construct Task manually!**
             Please use :meth:`Task.init` or :meth:`Task.get_task`
         """
+        print ("Enter Task::__init__")
         if private is not Task.__create_protection:
             raise UsageError(
                 'Task object cannot be instantiated externally, use Task.current_task() or Task.get_task(...)')
@@ -470,6 +472,8 @@ class Task(_Task):
         :return: The main execution Task (Task context)
         :rtype: Task
         """
+
+        print("Enter Task::init")
 
         def verify_defaults_match():
             validate = [
@@ -3392,6 +3396,7 @@ class Task(_Task):
             )
         )
         self.flush(wait_for_uploads=True)
+        print("9 - abort :\n{}".format(traceback.format_stack()))
         self.stopped(status_reason='USER ABORTED')
 
         if self._dev_worker:

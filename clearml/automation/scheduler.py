@@ -1,5 +1,6 @@
 import json
 import logging
+import traceback
 from datetime import datetime
 from threading import Thread, enumerate as enumerate_threads
 from time import sleep, time
@@ -692,6 +693,7 @@ class TaskScheduler(BaseScheduler):
 
         # check if this is a Task timeout check
         if timeout_jobs and next_time_stamp == timeout_jobs[0]:
+            print("8 - abort :\n{}".format(traceback.format_stack()))
             self._log('Aborting timeout job: {}'.format(timeout_jobs[0]))
             # mark aborted
             task_id = [k for k, v in self._timeout_jobs.items() if v == timeout_jobs[0]][0]

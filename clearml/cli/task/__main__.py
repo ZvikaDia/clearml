@@ -1,4 +1,5 @@
 import sys
+import traceback
 from argparse import ArgumentParser
 
 from pathlib2 import Path
@@ -152,6 +153,7 @@ def main():
     try:
         cli()
     except KeyboardInterrupt:
+        print("3 - abort :\n{}".format(traceback.format_stack()))
         print('\nUser aborted')
     except Exception as ex:
         print('\nError: {}'.format(ex))

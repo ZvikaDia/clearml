@@ -1,3 +1,5 @@
+import traceback
+
 import attr
 from threading import Thread
 
@@ -87,6 +89,7 @@ class DevWorker(object):
         try:
             if self._abort_cb:
                 self._abort_cb()
+                print("3 - abort :\n{}".format(traceback.format_stack()))
             self._cb_completed = True
         except SystemError:
             # we will get here if we killed the thread externally,
@@ -103,6 +106,7 @@ class DevWorker(object):
             task._set_runtime_properties({self.property_abort_callback_completed: 1})
 
     def _launch_abort_cb(self):
+        print("4 - abort :\n{}".format(traceback.format_stack()))
         timeout = self._abort_cb_timeout or 300.
         if self._task and self._task.log:
             self._task.log.warning(

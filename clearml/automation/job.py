@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import traceback
 import warnings
 from copy import deepcopy
 from datetime import datetime
@@ -19,7 +20,6 @@ from ..storage.util import hash_dict
 from ..task import Task
 from ..backend_api.services import tasks as tasks_service
 from ..utilities.proxy_object import verify_basic_type, get_basic_type
-
 
 logger = getLogger('clearml.automation.job')
 
@@ -93,10 +93,13 @@ class BaseJob(object):
         return False
 
     def abort(self):
+        print("5 - abort :\n{}".format(traceback.format_stack()))
         # type: () -> ()
         """
         Abort currently running job (can be called multiple times)
         """
+        print("1 - abort :\n{}".format(traceback.format_stack()))
+
         if not self.task or self._is_cached_task:
             return
 
@@ -267,7 +270,7 @@ class BaseJob(object):
 
         :return: True the task is currently in failed state
         """
-        return self.status() in (Task.TaskStatusEnum.failed, )
+        return self.status() in (Task.TaskStatusEnum.failed,)
 
     def is_completed(self):
         # type: () -> bool
@@ -285,7 +288,7 @@ class BaseJob(object):
 
         :return: True the task is currently in aborted state
         """
-        return self.status() in (Task.TaskStatusEnum.stopped, )
+        return self.status() in (Task.TaskStatusEnum.stopped,)
 
     def is_pending(self):
         # type: () -> bool
@@ -610,6 +613,7 @@ class LocalClearmlJob(ClearmlJob):
     Run jobs locally as a sub-process, use only when no agents are available (this will not use queues)
     or for debug purposes.
     """
+
     def __init__(self, *args, **kwargs):
         super(LocalClearmlJob, self).__init__(*args, **kwargs)
         self._job_process = None
@@ -641,7 +645,7 @@ class LocalClearmlJob(ClearmlJob):
 
         cwd = os.path.join(os.getcwd(), self.task.data.script.working_dir or '')
         # try to check based on current root repo + entrypoint
-        if Task.current_task() and not (Path(cwd)/local_filename).is_file():
+        if Task.current_task() and not (Path(cwd) / local_filename).is_file():
             working_dir = Task.current_task().data.script.working_dir or ''
             working_dir = working_dir.strip('.')
             levels = 0
@@ -758,7 +762,7 @@ class _JobStub(object):
             task_overrides=None,  # type: Optional[Mapping[str, str]]
             tags=None,  # type: Optional[Sequence[str]]
             **kwargs  # type: Any
-     ):
+    ):
         # type: (...) -> ()
         self.task = None
         self.base_task_id = base_task_id
@@ -777,6 +781,8 @@ class _JobStub(object):
     def abort(self):
         # type: () -> ()
         self.task_started = -1
+
+        print("7 - abort :\n{}".format(traceback.format_stack()))
 
     def elapsed(self):
         # type: () -> float
