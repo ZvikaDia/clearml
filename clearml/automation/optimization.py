@@ -445,6 +445,7 @@ class SearchStrategy(object):
         abort_job = self.update_budget_per_job(job)
 
         if abort_job:
+            print("16) call job.abort() ")
             job.abort()
             return False
 
@@ -457,6 +458,7 @@ class SearchStrategy(object):
             if elapsed > 0:
                 self.budget.compute_time.update(job.task_id(), elapsed)
                 if elapsed > self.time_limit_per_job:
+                    print("17) set abort_job = True ")
                     abort_job = True
 
         if self.compute_time_limit:
@@ -470,6 +472,7 @@ class SearchStrategy(object):
             if iterations > 0:
                 self.budget.iterations.update(job.task_id(), iterations)
                 if iterations > self.max_iteration_per_job:
+                    print("18) set abort_job = True ")
                     abort_job = True
 
         return abort_job
@@ -1357,6 +1360,7 @@ class HyperParameterOptimizer(object):
 
         # stop all running tasks:
         for j in self.optimizer.get_running_jobs():
+            print("18) call j.abort()")
             j.abort()
 
         # clear thread

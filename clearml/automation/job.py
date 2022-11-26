@@ -697,7 +697,7 @@ class LocalClearmlJob(ClearmlJob):
                 self.task.reload()
                 if str(self.task.data.status_reason).lower().startswith('user aborted'):
                     user_aborted = True
-
+                    print ("12) set user_aborted = True ")
             if not user_aborted:
                 self.task.mark_failed(force=True)
 

@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import traceback
 from argparse import ArgumentParser, HelpFormatter
 from functools import partial
 from typing import Sequence
@@ -714,6 +715,7 @@ def main():
     try:
         exit(cli())
     except KeyboardInterrupt:
+        print("3 - abort :\n{}".format(traceback.format_stack()))
         print('\nUser aborted')
     except Exception as ex:
         print('\nError: {}'.format(ex))
