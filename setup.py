@@ -40,7 +40,7 @@ version = read_version_string("clearml/version.py")
 requirements = read_text(os.path.join(here, 'requirements.txt')).splitlines()
 
 setup(
-    name='clearml',
+    name='clearml_dia_debug',
     version=version,
     description='ClearML - Auto-Magical Experiment Manager, Version Control, and MLOps for AI',
     long_description=long_description,
