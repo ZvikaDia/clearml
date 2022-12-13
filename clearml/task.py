@@ -192,7 +192,6 @@ class Task(_Task):
             **Do not construct Task manually!**
             Please use :meth:`Task.init` or :meth:`Task.get_task`
         """
-        print ("Enter Task::__init__")
         if private is not Task.__create_protection:
             raise UsageError(
                 'Task object cannot be instantiated externally, use Task.current_task() or Task.get_task(...)')
