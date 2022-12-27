@@ -243,7 +243,7 @@ class Budget(object):
             # type: () -> (Optional[float])
             if self.limit is None or not self.current:
                 return None
-            return sum(self.current.values())/float(self.limit)
+            return sum(self.current.values()) / float(self.limit)
 
     def __init__(self, jobs_limit, iterations_limit, compute_time_limit):
         # type: (Optional[int], Optional[int], Optional[float]) -> ()
@@ -882,7 +882,7 @@ class SearchStrategy(object):
         task_objects = Task._query_tasks(**task_filter)
         if not additional_fields:
             return [t.id for t in task_objects]
-        return [[t.id]+[getattr(t, f, None) for f in additional_fields] for t in task_objects]
+        return [[t.id] + [getattr(t, f, None) for f in additional_fields] for t in task_objects]
 
     @classmethod
     def _get_child_tasks(
@@ -1752,9 +1752,9 @@ class HyperParameterOptimizer(object):
                 self._report_remaining_budget(task_logger, counter)
 
                 if (
-                    self.optimizer.budget.compute_time.used
-                    and self.optimizer.budget.compute_time.limit
-                    and self.optimizer.budget.compute_time.used >= self.optimizer.budget.compute_time.limit
+                        self.optimizer.budget.compute_time.used
+                        and self.optimizer.budget.compute_time.limit
+                        and self.optimizer.budget.compute_time.used >= self.optimizer.budget.compute_time.limit
                 ):
                     logger.warning(
                         "Optimizer task reached compute time limit (used {:.2f} out of {:.2f})".format(
@@ -1766,7 +1766,7 @@ class HyperParameterOptimizer(object):
                 self._report_resources(task_logger, counter)
                 # collect a summary of all the jobs and their final objective values
                 cur_completed_jobs = set(self.optimizer.get_created_jobs_ids().keys()) - \
-                    {j.task_id() for j in self.optimizer.get_running_jobs()}
+                                     {j.task_id() for j in self.optimizer.get_running_jobs()}
                 self._report_completed_status(completed_jobs, cur_completed_jobs, task_logger, title)
                 self._report_completed_tasks_best_results(set(completed_jobs.keys()), task_logger, title, counter)
 
@@ -1791,7 +1791,7 @@ class HyperParameterOptimizer(object):
         best_experiment = \
             (self.objective_metric.get_normalized_objective(job_ids_sorted_by_objective[0]),
              job_ids_sorted_by_objective[0]) \
-            if job_ids_sorted_by_objective else (float('-inf'), None)
+                if job_ids_sorted_by_objective else (float('-inf'), None)
         if force or cur_completed_jobs != set(completed_jobs.keys()):
             pairs = []
             labels = []
@@ -1872,8 +1872,8 @@ class HyperParameterOptimizer(object):
             if len(table_values) > 1:
                 table_values_columns = [[row[i] for row in table_values] for i in range(len(table_values[0]))]
                 table_values_columns = \
-                    [[table_values_columns[0][0]] + [c[:6]+'...' for c in table_values_columns[0][1:]]] + \
-                    table_values_columns[2:-1] + [[title]+table_values_columns[1][1:]]
+                    [[table_values_columns[0][0]] + [c[:6] + '...' for c in table_values_columns[0][1:]]] + \
+                    table_values_columns[2:-1] + [[title] + table_values_columns[1][1:]]
                 pcc_dims = []
                 for col in table_values_columns:
                     # test if all values are numbers:
@@ -1991,8 +1991,17 @@ class HyperParameterOptimizer(object):
         for j in cur_completed_jobs:
             res = cur_task.send(tasks_service.GetByIdRequest(task=j))
             response = res.wait()
-            if not response.ok() or response.response_data["task"].get("status") != Task.TaskStatusEnum.completed:
+            # Z.P handle failure due to response.response_data = None
+            # if not response.ok() or response.response_data["task"].get("status") != Task.TaskStatusEnum.completed:
+            #     continue
+            if not response.ok():
                 continue
+            if response.response_data is None:
+                print("response.response_data is None pitfall ")
+                continue
+            if response.response_data["task"].get("status") != Task.TaskStatusEnum.completed:
+                continue
+
             completed_time = datetime.strptime(response.response_data["task"]["completed"].partition("+")[0],
                                                "%Y-%m-%dT%H:%M:%S.%f")
             completed_time = completed_time.timestamp()
